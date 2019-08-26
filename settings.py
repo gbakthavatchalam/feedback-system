@@ -1,6 +1,4 @@
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 
 APP_SETTINGS = {
@@ -36,5 +34,3 @@ MINIO = {
 }
 
 
-engine = create_engine(f"mysql+mysqldb://{DB['USER']}:{DB['PASSWORD']}@{DB['HOST']}/{DB['DATABASE']}")
-session = sessionmaker(bind=engine)()
