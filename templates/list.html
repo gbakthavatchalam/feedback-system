@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <title>Feedback Collection System</title>
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/form-validation.css" rel="stylesheet">
+  </head>
+  <body class="bg-light">
+<div id="app">    
+    <div class="container" id="feedbackForm">
+	<nav-bar></nav-bar>
+	<div v-if="renderComponent">
+	    <review 
+	    	v-for="item in reviewList"
+		v-bind:key="item.id"
+		v-bind:name="item.name"
+		v-bind:emailid="item.emailid"
+		v-bind:message="item.message">
+	    </review>
+	</div>
+    </div>
+</div>
+
+<script src="/js/jquery-3.js"></script>
+<script src="/js/bootstrap.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/js/app.js" type="module"></script>
+</body></html>
+
+

@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d
+    command: --default-authentication-plugin=mysql_native_password
+  minio:
+    image: minio/minio:latest
+    volumes:
+      - .:/data
+    ports:
+      - "9000:9000"
+    command: server /data
+    environment:
+      MINIO_ACCESS_KEY: MYACCESSKEY
+      MINIO_SECRET_KEY: MYSECRETKEY
+  web:  
+    build: .
+    environment:
+      MYSQL_HOST: db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: feedback
+      MINIO_HOST: minio
+      MINIO_ACCESS_KEY: MYACCESSKEY
+      MINIO_SECRET_KEY: MYSECRETKEY
+
+    command: python app.py --port=8888
+    volumes:
+      - .:/code
+    ports:
+      - "8888:8888"
+    depends_on:
+      - db
+      - minio
