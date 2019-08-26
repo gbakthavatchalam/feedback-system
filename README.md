@@ -50,6 +50,7 @@ docker-compose up
 1. Credentials can be moved and passed in as environment variables to the `docker-compose.yml` file
 2. Optimize the frontend to be a `SPA(Single Page Application)` by using client routing (`Vue Router`)
 3. For tornado webapp, use a config file and parse options from config file rather than `settings.py`
+4. Application needs some fine-tuning for better exception handling and reporting.
 
 ## Log Extraction
 1. In backend, logs are backed up in 2 different ways.
