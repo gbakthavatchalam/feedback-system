@@ -12,6 +12,7 @@ from custom_logger import LogHandler
 import dbutils
 import minio_utils
 import settings
+from queries import QUERIES
 
 
 logging.basicConfig(level=settings.LOGLEVEL, format=settings.LOGFORMAT)
@@ -71,8 +72,7 @@ class FeedbackAPIHandler(tornado.web.RequestHandler):
         """Async Handler to save the feedback"""
         data = tornado.escape.json_decode(self.request.body)
         # Can use wtforms based validation. I'am skipping it here
-        query = "INSERT INTO Review (`name`, `emailid`, `message`) VALUES (%(name)s, %(emailid)s, %(message)s)"
-        row_id = await dbutils.insert(self.db_conn, query, {"name": f"{data['firstname']} {data['lastname']}", "emailid": data["emailid"], "message": data["message"]})
+        row_id = await dbutils.insert(self.db_conn, QUERIES["review_save"], {"name": f"{data['firstname']} {data['lastname']}", "emailid": data["emailid"], "message": data["message"]})
         data["id"] = row_id
         await minio_utils.update_record_store(generate_log_metadata(self))
         self.write(data)
@@ -80,14 +80,15 @@ class FeedbackAPIHandler(tornado.web.RequestHandler):
 
     @update_log
     async def get(self):
-        reviews = await dbutils.select(self.db_conn, "SELECT * FROM Review")
-        keys = ("id", "name", "emailid", "message")
-        self.write(json.dumps([dict(zip(keys, row)) for row in reviews]))
+        reviews = await dbutils.select(self.db_conn, QUERIES["review_get_all"])
+        self.write(json.dumps([{"id": row[0], "name": row[1], "emailid": row[2], "message": row[3]} for row in reviews]))
     
 
-async def make_app():
-    engine = await dbutils.get_engine()
-    connection = await dbtuils.get_connection(engine)
+def make_app():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    engine = loop.run_until_complete(dbutils.get_engine())
+    connection = loop.run_until_complete(dbutils.get_connection(engine))
     return tornado.web.Application([
         (r'/js/(.*)', tornado.web.StaticFileHandler, {'path': os.path.join(os.path.dirname(__file__), 'js')}),
         (r"/api/feedback", FeedbackAPIHandler, dict(db_conn=connection)),
@@ -101,6 +102,6 @@ parse_command_line()
 
 
 if __name__ == "__main__":
-    app = await make_app()
+    app = make_app()
     app.listen(options.port)
-    torniado.ioloop.IOLoop.current().start()
+    tornado.ioloop.IOLoop.current().start()
