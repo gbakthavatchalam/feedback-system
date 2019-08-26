@@ -30,12 +30,16 @@ docker-compose up
 * For `Minio`, Open the browser by pointing to `http://localhost:9000`. Creds from docker-compose file can be used for logging in.
 
 ## Frontend Endpoints
+```
 "/" GET Lets you to submit feedback
 "/list" GET Lets you to view all feedbacks
+```
 
 ## Backend APIs
+```
 "/api/feedback" GET - Gets list of all feedbacks
 "/api/feedback" POST - Saves the feedback
+```
 
 ## Warning
 1. `MySQL` & `Minio` credentials are stored in the `docker-compose.yml`
